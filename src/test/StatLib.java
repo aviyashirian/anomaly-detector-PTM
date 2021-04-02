@@ -48,7 +48,16 @@ public class StatLib {
 
 	// performs a linear regression and returns the line equation
 	public static Line linear_reg(Point[] points){
-		return null;
+		float[] x = new float[points.length];
+		float[] y = new float[points.length];
+		for (int i = 0; i < points.length; i++) {
+			x[i] = points[i].x;
+			y[i] = points[i].y;
+		}
+
+		float a = StatLib.cov(x, y) / StatLib.var(x);
+		float b = StatLib.avg(y) - a * StatLib.avg(x);
+		return new Line(a, b);
 	}
 
 	// returns the deviation between point p and the line equation of the points
