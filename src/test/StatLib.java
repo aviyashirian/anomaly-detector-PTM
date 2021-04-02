@@ -6,13 +6,24 @@ public class StatLib {
 	
 
 	// simple average
-	public static float avg(float[] x){
-		return 0;
+	public static float avg(float[] x) {
+		float sum = 0;
+		for (float f : x) {
+			sum += f;
+		}
+
+		return sum / x.length;
 	}
 
 	// returns the variance of X and Y
-	public static float var(float[] x){
-		return 0;
+	public static float var(float[] x) {
+		float avg = StatLib.avg(x);
+
+		float squaredDiff = 0;
+		for (float f : x)
+			squaredDiff += (f - avg) * (f - avg);
+
+		return squaredDiff / x.length;
 	}
 
 	// returns the covariance of X and Y
