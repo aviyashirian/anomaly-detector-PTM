@@ -2,12 +2,10 @@ package test;
 
 
 public class StatLib {
-
-	
-
 	// simple average
 	public static float avg(float[] x) {
 		float sum = 0;
+
 		for (float f : x) {
 			sum += f;
 		}
@@ -28,8 +26,15 @@ public class StatLib {
 
 	// returns the covariance of X and Y
 	public static float cov(float[] x, float[] y){
+		float avg_x = StatLib.avg(x);
+		float avg_y = StatLib.avg(y);
+		int n = x.length;
 
-		return 0;
+		float diff_sum = 0;
+		for(int i=0; i<n; i++)
+			diff_sum += (x[i] - avg_x) * (y[i] - avg_y);
+
+		return diff_sum / n;
 	}
 
 
