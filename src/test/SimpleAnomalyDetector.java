@@ -32,7 +32,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector {
 						ts.getFieldNames().get(f2), 
 						best_pearson, 
 						line,
-						this.calcThreshold(points, line)
+						this.calcThreshold(points, line)*1.1f // add 10%
 					)
 				);
 			}
@@ -51,7 +51,20 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector {
 
 	@Override
 	public List<AnomalyReport> detect(TimeSeries ts) {
-		return null;
+		List<AnomalyReport> reports = new ArrayList<>();
+
+		for(CorrelatedFeatures cf : this.correlated_features) {
+			float[] x = ts.getColumn(cf.feature1);
+			float[] y = ts.getColumn(cf.feature2);
+			for(int i=0; i < x.length; i++){
+				if(StatLib.dev(new Point(x[i], y[i]), cf.lin_reg) > cf.threshold){
+					String description = cf.feature1 + "-" + cf.feature2;
+					reports.add(new AnomalyReport(description, i+1));
+				}
+			}
+		}
+
+		return reports;
 	}
 	
 	public List<CorrelatedFeatures> getNormalModel(){

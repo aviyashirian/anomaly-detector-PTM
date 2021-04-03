@@ -42,7 +42,11 @@ public class TimeSeries {
 	}
 
 	public float[] getColumn(int index) {
-		List<Float> list = this.time_steps.get(this.fields.get(index));
+		return this.getColumn(this.fields.get(index));
+	}
+
+	public float[] getColumn(String feature) {
+		List<Float> list = this.time_steps.get(feature);
 		float[] arr = new float[list.size()];
 		for(int i = 0; i < list.size(); i++) arr[i] = list.get(i);
 
