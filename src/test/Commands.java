@@ -151,4 +151,19 @@ public class Commands {
 			dio.write("anomaly detection complete.\n");
 		}
 	}
+
+	public class DisplayResultsCommand extends Command{
+
+		public DisplayResultsCommand() {
+			super("display results");
+		}
+
+		@Override
+		public void execute() {
+			for (AnomalyReport report : sharedState.reports){
+				dio.write(report.timeStep + "\t" + report.description + "\n");
+			}
+			dio.write("Done.\n");
+		}
+	}
 }

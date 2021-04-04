@@ -21,6 +21,7 @@ public class CLI {
 		commands.add(c.new UploadCsvCommand());
 		commands.add(c.new AlgorithmSettingCommand());
 		commands.add(c.new DetectAnomaliesCommand());
+		commands.add(c.new DisplayResultsCommand());
 	}
 	
 	public void start() {
