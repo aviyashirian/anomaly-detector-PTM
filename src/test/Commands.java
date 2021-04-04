@@ -169,4 +169,28 @@ public class Commands {
 			dio.write("Done.\n");
 		}
 	}
+
+	public class UploadAndAnalyzeCommand extends Command{
+
+		public UploadAndAnalyzeCommand() {
+			super("upload anomalies and analyze results");
+		}
+
+		@Override
+		public void execute() {
+			// implement
+		}
+	}
+
+	public class ExitCommand extends Command{
+
+		public ExitCommand() {
+			super("exit");
+		}
+
+		@Override
+		public void execute() {
+			// implement
+		}
+	}
 }

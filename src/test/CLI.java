@@ -22,6 +22,8 @@ public class CLI {
 		commands.add(c.new AlgorithmSettingCommand());
 		commands.add(c.new DetectAnomaliesCommand());
 		commands.add(c.new DisplayResultsCommand());
+		commands.add(c.new UploadAndAnalyzeCommand());
+		commands.add(c.new ExitCommand());
 	}
 	
 	public void start() {
