@@ -3,7 +3,6 @@ package test;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,15 +17,14 @@ public class Commands {
 
 		// you may add default methods here
 	}
-	
+
 	// the default IO to be used in all commands
 	DefaultIO dio;
 	public Commands(DefaultIO dio) {
 		this.dio=dio;
 	}
 	
-	public class ConsoleIO implements DefaultIO {
-
+	public class StandardIO implements DefaultIO {
 		@Override
 		public String readText() {
 			Scanner scan = new Scanner(System.in);
@@ -38,7 +36,6 @@ public class Commands {
 		@Override
 		public void write(String text) {
 			System.out.println(text);
-
 		}
 
 		@Override
@@ -52,7 +49,6 @@ public class Commands {
 		@Override
 		public void write(float val) {
 			System.out.println(val);
-
 		}
 		
 		public void readCsv(PrintWriter out) throws IOException {
@@ -61,7 +57,7 @@ public class Commands {
 				line = dio.readText();
 			}
 			while(!line.contains("done")){
-				out.write(line+"\n");
+				out.write(line + "\n");
 				line = dio.readText();
 			}
 		}
@@ -78,7 +74,7 @@ public class Commands {
 		public float threshold = (float) 0.9;
 		public SimpleAnomalyDetector detector = new SimpleAnomalyDetector();
 		public List<AnomalyReport> reports;
-		public ConsoleIO cmd = new ConsoleIO();
+		public StandardIO sio = new StandardIO();
 	}
 	
 	private  SharedState sharedState=new SharedState();
@@ -106,14 +102,14 @@ public class Commands {
 			try {
 				dio.write("Please upload your local train CSV file.\n");
 				PrintWriter train = new PrintWriter(new FileWriter("anomalyTrain.csv"));
-				sharedState.cmd.readCsv(train);
+				sharedState.sio.readCsv(train);
 				train.close();
 				sharedState.trainTs = new TimeSeries("anomalyTrain.csv");
 				dio.write("Upload complete.\n");
 				
 				dio.write("Please upload your local test CSV file.\n");
 				PrintWriter test = new PrintWriter( new FileWriter("anomalyTest.csv"));
-				sharedState.cmd.readCsv(test);
+				sharedState.sio.readCsv(test);
 				test.close();
 				sharedState.testTs = new TimeSeries("anomalyTest.csv");
 				dio.write("Upload complete.\n");
@@ -134,7 +130,14 @@ public class Commands {
 		public void execute() {
 		    dio.write("The current correlation threshold is " + sharedState.threshold + "\n");
 		    dio.write("Type a new threshold\n");
-			sharedState.threshold = dio.readVal();
+			float inputThreshold = dio.readVal();
+
+			while (inputThreshold < 0 || inputThreshold > 1) {
+				dio.write("please choose a value between 0 and 1.");
+				inputThreshold = dio.readVal();
+			}
+
+			sharedState.threshold = inputThreshold;
 		}
 	}
 
