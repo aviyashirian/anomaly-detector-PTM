@@ -137,4 +137,18 @@ public class Commands {
 			sharedState.threshold = dio.readVal();
 		}
 	}
+
+	public class DetectAnomaliesCommand extends Command{
+
+		public DetectAnomaliesCommand() {
+			super("detect anomalies");
+		}
+
+		@Override
+		public void execute() {
+			sharedState.detector.learnNormal(sharedState.trainTs);
+			sharedState.reports = sharedState.detector.detect(sharedState.testTs);
+			dio.write("anomaly detection complete.\n");
+		}
+	}
 }
