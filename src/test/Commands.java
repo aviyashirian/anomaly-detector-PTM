@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Commands {
 	
@@ -24,14 +25,60 @@ public class Commands {
 		this.dio=dio;
 	}
 	
-	// you may add other helper classes here
+	public class ConsoleIO implements DefaultIO {
+
+		@Override
+		public String readText() {
+			Scanner scan = new Scanner(System.in);
+			String line = scan.nextLine();
+			scan.close();
+			return line;
+		}
+
+		@Override
+		public void write(String text) {
+			System.out.println(text);
+
+		}
+
+		@Override
+		public float readVal() {
+			Scanner myScan = new Scanner(System.in);
+			float in = myScan.nextInt();
+			myScan.close();
+			return in;
+		}
+
+		@Override
+		public void write(float val) {
+			System.out.println(val);
+
+		}
+		
+		public void readCsv(PrintWriter out) throws IOException {
+			String line = dio.readText();
+			if (line == ""){
+				line = dio.readText();
+			}
+			while(!line.contains("done")){
+				out.write(line+"\n");
+				line = dio.readText();
+			}
+		}
+	}
+
+
 	
 	
 	
 	// the shared state of all commands
 	private class SharedState{
-		// implement here whatever you need
-		
+		public TimeSeries trainTs;
+		public TimeSeries testTs;
+		public float threshold = (float) 0.9;
+		public SimpleAnomalyDetector detector = new SimpleAnomalyDetector();
+		public List<AnomalyReport> reports;
+		public ConsoleIO cmd = new ConsoleIO();
 	}
 	
 	private  SharedState sharedState=new SharedState();
@@ -61,6 +108,33 @@ public class Commands {
 		}		
 	}
 	
-	// implement here all other commands
+	public class UploadCsvCommand extends Command{
+
+		public UploadCsvCommand() {
+			super("upload a time series csv file");
+		}
+
+		@Override
+		public void execute() {
+			try {
+				dio.write("Please upload your local train CSV file.\n");
+				PrintWriter train = new PrintWriter(new FileWriter("anomalyTrain.csv"));
+				sharedState.cmd.readCsv(train);
+				train.close();
+				sharedState.trainTs = new TimeSeries("anomalyTrain.csv");
+				dio.write("Upload complete.\n");
+				
+				dio.write("Please upload your local test CSV file.\n");
+				PrintWriter test = new PrintWriter( new FileWriter("anomalyTest.csv"));
+				sharedState.cmd.readCsv(test);
+				test.close();
+				sharedState.testTs = new TimeSeries("anomalyTest.csv");
+				dio.write("Upload complete.\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}		
+	}
 	
 }
