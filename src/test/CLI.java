@@ -19,6 +19,7 @@ public class CLI {
 		// implement
 
 		commands.add(c.new UploadCsvCommand());
+		commands.add(c.new AlgorithmSettingCommand());
 	}
 	
 	public void start() {

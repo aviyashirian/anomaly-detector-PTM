@@ -95,19 +95,6 @@ public class Commands {
 		public abstract void execute();
 	}
 	
-	// Command class for example:
-	public class ExampleCommand extends Command{
-
-		public ExampleCommand() {
-			super("this is an example of command");
-		}
-
-		@Override
-		public void execute() {
-			dio.write(description);
-		}		
-	}
-	
 	public class UploadCsvCommand extends Command{
 
 		public UploadCsvCommand() {
@@ -137,4 +124,17 @@ public class Commands {
 		}		
 	}
 	
+	public class AlgorithmSettingCommand extends Command{
+
+		public AlgorithmSettingCommand() {
+			super("algorithm settings");
+		}
+
+		@Override
+		public void execute() {
+		    dio.write("The current correlation threshold is " + sharedState.threshold + "\n");
+		    dio.write("Type a new threshold\n");
+			sharedState.threshold = dio.readVal();
+		}
+	}
 }
