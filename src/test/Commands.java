@@ -3,8 +3,12 @@ package test;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Commands {
 	
@@ -177,8 +181,70 @@ public class Commands {
 		}
 
 		@Override
-		public void execute() {
-			// implement
+		public void execute() {			
+			List<Anomaly> inputAnomalies = this.UploadAnomalies();
+			List<Anomaly> reportedAnomalies = this.JoinReports(sharedState.reports);
+
+		}
+
+		private List<Anomaly> UploadAnomalies() {
+			dio.write("Please upload your local anomalies file.\n");
+			
+			List<Anomaly> anomalies = new ArrayList<>();
+			String line = dio.readText();
+			if (line.equals("")) {
+				line = dio.readText();
+			}
+
+			while (!line.equals("done")) {
+				long start = Long.parseLong(line.split(",")[0]);
+				long end = Long.parseLong(line.split(",")[1]);
+				anomalies.add(new Anomaly(start, end, "description"));
+
+				line = dio.readText();
+			}
+
+			dio.write("Upload complete.\n");
+			return anomalies;
+		}
+
+		private List<Anomaly> JoinReports(List<AnomalyReport> reports) {
+			List<Anomaly> anomalies = new ArrayList<>();
+			for (int i = 0; i < reports.size(); i++) {
+				AnomalyReport currReport = reports.get(i);
+				long start = currReport.timeStep;
+				long end = start;
+
+				for (int j = i + 1; j < reports.size(); j++) {
+					AnomalyReport nextReport = reports.get(j);
+					if (
+						currReport.timeStep + 1 == nextReport.timeStep &&
+						currReport.description.equals(nextReport.description)
+					) {
+						i = j;
+						end = nextReport.timeStep;
+						currReport = nextReport;
+					} else {
+						break;
+					}
+				}
+
+				anomalies.add(new Anomaly(start, end, currReport.description));
+			}
+
+			return anomalies;
+		}
+	}
+
+	private class Anomaly { 
+		public final long startTimeStep;
+		public final long endTimeStep;
+		public final String description;
+
+		public Anomaly(long start, long end, String description) {
+			this.startTimeStep = start;
+			this.endTimeStep = end;
+			this.description = description;
 		}
 	}
 

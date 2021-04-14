@@ -27,12 +27,11 @@ public class CLI {
 	}
 	
 	public void start() {
-		// implement
 		this.printCommands();
 
 		float selection = dio.readVal();
 
-		while (selection > 0 && selection <= this.commands.size()) {
+		while (selection > 0 && selection <= this.commands.size() && this.commands.get((int)selection - 1).description != "exit") {
 			try {
 				this.commands.get((int)selection - 1).execute();
 			} catch (Exception e) {
