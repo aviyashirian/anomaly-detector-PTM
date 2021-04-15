@@ -15,8 +15,6 @@ public class CLI {
 		this.dio=dio;
 		c=new Commands(dio); 
 		commands=new ArrayList<>();
-		// example: commands.add(c.new ExampleCommand());
-		// implement
 
 		commands.add(c.new UploadCsvCommand());
 		commands.add(c.new AlgorithmSettingCommand());
@@ -29,7 +27,7 @@ public class CLI {
 	public void start() {
 		this.printCommands();
 
-		float selection = dio.readVal();
+		float selection = Float.parseFloat(dio.readText());
 
 		while (selection > 0 && selection <= this.commands.size() && this.commands.get((int)selection - 1).description != "exit") {
 			try {

@@ -39,7 +39,7 @@ public class Commands {
 
 		@Override
 		public void write(String text) {
-			System.out.println(text);
+			System.out.print(text);
 		}
 
 		@Override
@@ -52,7 +52,7 @@ public class Commands {
 
 		@Override
 		public void write(float val) {
-			System.out.println(val);
+			System.out.print(val);
 		}
 		
 		public void readCsv(PrintWriter out) throws IOException {
@@ -67,10 +67,6 @@ public class Commands {
 		}
 	}
 
-
-	
-	
-	
 	// the shared state of all commands
 	private class SharedState{
 		public TimeSeries trainTs;
@@ -182,9 +178,28 @@ public class Commands {
 
 		@Override
 		public void execute() {			
-			List<Anomaly> inputAnomalies = this.UploadAnomalies();
-			List<Anomaly> reportedAnomalies = this.JoinReports(sharedState.reports);
+			List<Anomaly> actualAnomalies = this.UploadAnomalies();
+			List<Anomaly> detectedAnomalies = this.JoinReports(sharedState.reports);
 
+			double P = actualAnomalies.size();
+			double N = sharedState.testTs.getColumn(0).length - sharedState.reports.size();
+
+			double FP = 0, TP = 0;
+
+			for (Anomaly detected : detectedAnomalies) {
+				boolean overlap = actualAnomalies.stream().anyMatch(a -> 
+					a.startTimeStep <= detected.endTimeStep && detected.startTimeStep <= a.endTimeStep
+				);
+
+				if (overlap) {
+					TP++;
+				} else {
+					FP++;
+				}
+			}
+
+			dio.write("True Positive Rate: " + (double)((int)((TP / P)*1000))/1000 + "\n");
+			dio.write("False Positive Rate: " + (double)((int)((FP / N)*1000))/1000 + "\n");
 		}
 
 		private List<Anomaly> UploadAnomalies() {
@@ -193,13 +208,13 @@ public class Commands {
 			List<Anomaly> anomalies = new ArrayList<>();
 			String line = dio.readText();
 			if (line.equals("")) {
-				line = dio.readText();
+				line = dio.readText();	
 			}
 
 			while (!line.equals("done")) {
 				long start = Long.parseLong(line.split(",")[0]);
 				long end = Long.parseLong(line.split(",")[1]);
-				anomalies.add(new Anomaly(start, end, "description"));
+				anomalies.add(new Anomaly(start, end, ""));
 
 				line = dio.readText();
 			}
